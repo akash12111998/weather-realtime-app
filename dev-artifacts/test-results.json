@@ -1,0 +1,68 @@
+{
+  "step1": {
+    "started": true,
+    "resultsCount": 10,
+    "firstResultClicked": true
+  },
+  "step2": {
+    "started": true,
+    "weatherSectionVisible": true,
+    "weatherCardsCount": 8,
+    "cardLabels": [
+      "Condition",
+      "Temperature",
+      "Feels Like",
+      "Humidity",
+      "Wind Speed",
+      "Pressure",
+      "Precipitation",
+      "Cloud Cover"
+    ],
+    "forecastCardsCount": 7,
+    "sunUvCardsCount": 3,
+    "aqiCardsCount": 4,
+    "hourlyChartHasPolyline": true,
+    "hourlyChartHasCircles": true
+  },
+  "step3": {
+    "started": true,
+    "initialValues": {
+      "temp": "15.1\u00b0C",
+      "wind": "10.1 km/h",
+      "precip": "0 mm",
+      "pressure": "1011 hPa"
+    },
+    "newTemp": "59.1\u00b0F",
+    "newWind": "6.3 mp/h",
+    "newPrecip": "0 inch",
+    "newPressure": "29.85 inHg",
+    "valuesChanged": {
+      "temp": true,
+      "wind": true,
+      "precip": true,
+      "pressure": true
+    }
+  },
+  "step4": {
+    "started": true,
+    "initialPinnedLabel": "Pinned location: none",
+    "newPinnedLabel": "Pinned location: none",
+    "labelChanged": false,
+    "locationName": "Tokyo, Tokyo, Japan"
+  },
+  "step5": {
+    "started": true,
+    "initialStatus": "Weather and 7-day forecast loaded successfully.",
+    "newStatus": "Globe view reset. Auto-rotate resumed.",
+    "statusChanged": true
+  },
+  "step6": {
+    "started": true,
+    "statusMessage": "Unable to access your location: User denied Geolocation",
+    "hasPermissionError": true
+  },
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (File not found)"
+  ],
+  "networkErrors": []
+}
