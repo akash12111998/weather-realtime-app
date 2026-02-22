@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global Real-Time Weather</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="app-header">
+      <h1>Global Real-Time Weather</h1>
+      <p>Search by city, state, country, or region.</p>
+    </header>
+
+    <section class="search-panel">
+      <form id="search-form">
+        <label for="location-input" class="sr-only">Location</label>
+        <input
+          id="location-input"
+          type="text"
+          placeholder="e.g. Mumbai, California, France, Tokyo"
+          autocomplete="off"
+          required
+        />
+        <button id="search-btn" type="submit">Search</button>
+      </form>
+
+      <div class="toolbar">
+        <label for="unit-select">Temperature Unit</label>
+        <select id="unit-select">
+          <option value="celsius">Celsius (C)</option>
+          <option value="fahrenheit">Fahrenheit (F)</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="globe-section">
+      <h2 class="section-title">Pick a Location on the Globe</h2>
+      <div class="toolbar globe-toolbar">
+        <label for="globe-style-select">Globe Style</label>
+        <select id="globe-style-select">
+          <option value="satellite">Satellite</option>
+          <option value="satellite_labels">Satellite + Labels (Hybrid)</option>
+          <option value="topographic" selected>Topographic</option>
+          <option value="night">Night</option>
+          <option value="borders">Borders (Intl + Domestic)</option>
+          <option value="cartographic_light">Cartographic Light</option>
+          <option value="cartographic_dark">Cartographic Dark</option>
+        </select>
+      </div>
+      <p id="globe-style-status" class="globe-style-status hidden" aria-live="polite"></p>
+      <div id="globe-view" class="globe-view" aria-label="3D globe for pinpoint weather"></div>
+      <p id="pinned-coords" class="pinned-coords">Pinned location: none</p>
+    </section>
+
+    <section>
+      <h2 class="section-title">Matching Locations</h2>
+      <ul id="results-list" class="results-list" aria-live="polite"></ul>
+    </section>
+
+    <section id="weather-section" class="weather-section hidden" aria-live="polite">
+      <h2 id="selected-location"></h2>
+      <div id="weather-grid" class="weather-grid"></div>
+      <p id="updated-at" class="updated-at"></p>
+      <h3 class="forecast-title">7-Day Forecast</h3>
+      <div id="forecast-grid" class="forecast-grid"></div>
+    </section>
+
+    <p id="status-message" class="status-message">Search for a location to begin.</p>
+  </main>
+
+  <script src="https://unpkg.com/globe.gl"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
