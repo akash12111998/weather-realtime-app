@@ -16,6 +16,7 @@ From this folder:
 
 ```bash
 npm install
-node test-browser.js
-node test-globe-pin.js
+npm run test:browser
+npm run test:globe
+npm run test:all
 ```

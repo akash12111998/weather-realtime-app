@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "test:browser": "node test-browser.js",
+    "test:globe": "node test-globe-pin.js",
+    "test:all": "npm run test:browser && npm run test:globe"
+  },
   "dependencies": {
     "puppeteer": "^24.37.5"
   }
