@@ -17,17 +17,23 @@ A simple web app to search **any city/state/country/region globally** and view c
 - Reverse geocoding on globe click (shows nearest city/state/country)
 - Real-time weather details
 - 7-day forecast (daily condition, high/low, rain chance)
+- 24-hour temperature trend chart
+- Current location weather using browser geolocation
+- Air quality panel (US AQI, PM2.5, PM10, ozone)
+- Sunrise, sunset, and UV max summary
+- Smart severe-condition alerts (wind, storm, UV, AQI)
 - Responsive layout for mobile and tablet screens
   - Includes landscape-mobile optimization for better globe visibility and control spacing
 - Improved globe zoom stability and clearer pin marker with animated highlight rings
 - Reset View control to recenter the globe and resume auto-rotation
-- Unit switch: Celsius or Fahrenheit
+- Expanded unit controls: temperature, wind, precipitation, pressure
 - No paid API required (uses free Open-Meteo APIs)
 
 ## APIs Used
 
 - Geocoding: `https://geocoding-api.open-meteo.com/v1/search`
 - Weather: `https://api.open-meteo.com/v1/forecast`
+- Air quality: `https://air-quality-api.open-meteo.com/v1/air-quality`
 - Reverse geocoding for pinned points: `https://api.bigdatacloud.net/data/reverse-geocode-client`
 - 3D globe rendering library (CDN): `https://unpkg.com/globe.gl`
 
@@ -39,6 +45,9 @@ These are free and do not require credit card setup.
 2. Click directly on the 3D globe to pin coordinates.
 3. The app updates the same weather panel with:
    - current weather
+   - AQI + sunrise/sunset + UV
+   - severe-condition alerts (if triggered)
+   - 24-hour trend chart
    - 7-day forecast
 4. Use the globe style dropdown to switch between **Satellite**, **Satellite + Labels**, **Topographic**, **Night**, **Borders (Intl + Domestic)**, **Cartographic Light**, and **Cartographic Dark** views.
    - A small status message appears while border layers are loading.
@@ -46,6 +55,7 @@ These are free and do not require credit card setup.
 5. After globe click, the app resolves and shows nearest **city/state/country**; if unavailable, it falls back to coordinates.
 6. Change Celsius/Fahrenheit from the dropdown to re-fetch data for the last selected or pinned location.
 7. Click **Reset View** to recenter the globe and resume auto-rotation.
+8. Click **Use My Location** to instantly load local weather and AQI.
 
 ## Weather Data Included
 

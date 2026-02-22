@@ -105,12 +105,38 @@ body {
   gap: 0.5rem;
 }
 
-#unit-select {
+#temp-unit-select,
+#wind-unit-select,
+#precip-unit-select,
+#pressure-unit-select {
   border: 1px solid var(--border);
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   background: #0b1220;
   color: var(--text);
+}
+
+#current-location-btn {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #0f172a;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#current-location-btn:hover {
+  border-color: var(--accent);
+}
+
+.unit-toolbar {
+  flex-wrap: wrap;
+}
+
+.unit-toolbar label {
+  color: var(--muted);
+  font-size: 0.88rem;
 }
 
 #globe-style-select {
@@ -238,6 +264,55 @@ body {
   font-size: 0.9rem;
 }
 
+.alerts-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.alert-pill {
+  border: 1px solid #f59e0b;
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.14);
+  border-radius: 999px;
+  padding: 0.28rem 0.62rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.alert-pill.info {
+  border-color: var(--border);
+  color: var(--muted);
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.sun-uv-grid,
+.aqi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.hourly-chart-wrap {
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  background: #0b1220;
+  padding: 0.4rem;
+}
+
+#hourly-chart {
+  width: 100%;
+  height: 220px;
+  display: block;
+}
+
+.hourly-meta {
+  color: var(--muted);
+  font-size: 0.86rem;
+  margin-top: 0.4rem;
+}
+
 .hidden {
   display: none;
 }
@@ -293,12 +368,20 @@ body {
     gap: 0.4rem 0.6rem;
   }
 
-  #unit-select,
+  #temp-unit-select,
+  #wind-unit-select,
+  #precip-unit-select,
   #globe-style-select {
+    width: 100%;
+  }
+  #pressure-unit-select {
     width: 100%;
   }
 
   #reset-globe-view-btn {
+    width: 100%;
+  }
+  #current-location-btn {
     width: 100%;
   }
 
@@ -312,6 +395,10 @@ body {
 
   .forecast-grid {
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
+
+  #hourly-chart {
+    height: 180px;
   }
 }
 
@@ -347,8 +434,17 @@ body {
   .status-message,
   .updated-at,
   .pinned-coords,
-  .globe-style-status {
+  .globe-style-status,
+  .hourly-meta {
     font-size: 0.84rem;
+  }
+
+  .alert-pill {
+    font-size: 0.76rem;
+  }
+
+  #hourly-chart {
+    height: 150px;
   }
 }
 

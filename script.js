@@ -5,14 +5,23 @@ const weatherSection = document.getElementById("weather-section");
 const selectedLocation = document.getElementById("selected-location");
 const weatherGrid = document.getElementById("weather-grid");
 const forecastGrid = document.getElementById("forecast-grid");
+const sunUvGrid = document.getElementById("sun-uv-grid");
+const aqiGrid = document.getElementById("aqi-grid");
+const alertsPanel = document.getElementById("alerts-panel");
+const hourlyChart = document.getElementById("hourly-chart");
+const hourlyMeta = document.getElementById("hourly-meta");
 const globeView = document.getElementById("globe-view");
 const pinnedCoords = document.getElementById("pinned-coords");
 const globeStyleSelect = document.getElementById("globe-style-select");
 const resetGlobeViewBtn = document.getElementById("reset-globe-view-btn");
+const currentLocationBtn = document.getElementById("current-location-btn");
 const globeStyleStatus = document.getElementById("globe-style-status");
 const statusMessage = document.getElementById("status-message");
 const updatedAt = document.getElementById("updated-at");
-const unitSelect = document.getElementById("unit-select");
+const tempUnitSelect = document.getElementById("temp-unit-select");
+const windUnitSelect = document.getElementById("wind-unit-select");
+const precipUnitSelect = document.getElementById("precip-unit-select");
+const pressureUnitSelect = document.getElementById("pressure-unit-select");
 
 let lastSelectedLocation = null;
 let globe = null;
@@ -22,6 +31,7 @@ let borderDataPromise = null;
 
 const countryBordersGeoJsonUrl = "https://unpkg.com/globe.gl/example/datasets/ne_110m_admin_0_countries.geojson";
 const domesticBordersGeoJsonUrl = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces.geojson";
+const airQualityApiUrl = "https://air-quality-api.open-meteo.com/v1/air-quality";
 const defaultOverlayState = { countries: [], domesticPaths: [], countryLabels: [], stateLabels: [] };
 
 const weatherCodeMap = {
@@ -673,12 +683,44 @@ function renderResults(results) {
 }
 
 function getSpeedUnit() {
-  // Open-Meteo expects "kmh" (not "km/h") for metric wind speed.
-  return unitSelect.value === "fahrenheit" ? "mph" : "kmh";
+  return windUnitSelect.value;
 }
 
 function getPrecipitationUnit() {
-  return unitSelect.value === "fahrenheit" ? "inch" : "mm";
+  return precipUnitSelect.value;
+}
+
+function getPressureUnit() {
+  return pressureUnitSelect.value;
+}
+
+function toInHg(hPa) {
+  return hPa * 0.0295299831;
+}
+
+function formatPressure(value, unit) {
+  if (unit === "inhg") {
+    return `${toInHg(value).toFixed(2)} inHg`;
+  }
+  return `${Math.round(value)} hPa`;
+}
+
+function getAqiBand(usAqi) {
+  if (usAqi <= 50) return { label: "Good", color: "#4ade80" };
+  if (usAqi <= 100) return { label: "Moderate", color: "#facc15" };
+  if (usAqi <= 150) return { label: "Unhealthy (Sensitive)", color: "#fb923c" };
+  if (usAqi <= 200) return { label: "Unhealthy", color: "#f87171" };
+  if (usAqi <= 300) return { label: "Very Unhealthy", color: "#c084fc" };
+  return { label: "Hazardous", color: "#ef4444" };
+}
+
+function createCard(label, value) {
+  return `
+    <article class="card">
+      <p class="card-label">${label}</p>
+      <p class="card-value">${value}</p>
+    </article>
+  `;
 }
 
 function renderWeather(place, payload) {
@@ -686,42 +728,19 @@ function renderWeather(place, payload) {
   const currentUnits = payload.current_units;
   const locationText = getLocationText(place);
   const weatherDescription = weatherCodeMap[current.weather_code] || "Unknown";
+  const pressureDisplay = formatPressure(current.surface_pressure, getPressureUnit());
 
   selectedLocation.textContent = locationText;
-  weatherGrid.innerHTML = `
-    <article class="card">
-      <p class="card-label">Condition</p>
-      <p class="card-value">${weatherDescription}</p>
-    </article>
-    <article class="card">
-      <p class="card-label">Temperature</p>
-      <p class="card-value">${current.temperature_2m}${currentUnits.temperature_2m}</p>
-    </article>
-    <article class="card">
-      <p class="card-label">Feels Like</p>
-      <p class="card-value">${current.apparent_temperature}${currentUnits.apparent_temperature}</p>
-    </article>
-    <article class="card">
-      <p class="card-label">Humidity</p>
-      <p class="card-value">${current.relative_humidity_2m}${currentUnits.relative_humidity_2m}</p>
-    </article>
-    <article class="card">
-      <p class="card-label">Wind Speed</p>
-      <p class="card-value">${current.wind_speed_10m} ${currentUnits.wind_speed_10m}</p>
-    </article>
-    <article class="card">
-      <p class="card-label">Pressure</p>
-      <p class="card-value">${current.surface_pressure} ${currentUnits.surface_pressure}</p>
-    </article>
-    <article class="card">
-      <p class="card-label">Precipitation</p>
-      <p class="card-value">${current.precipitation} ${currentUnits.precipitation}</p>
-    </article>
-    <article class="card">
-      <p class="card-label">Cloud Cover</p>
-      <p class="card-value">${current.cloud_cover}${currentUnits.cloud_cover}</p>
-    </article>
-  `;
+  weatherGrid.innerHTML = [
+    createCard("Condition", weatherDescription),
+    createCard("Temperature", `${current.temperature_2m}${currentUnits.temperature_2m}`),
+    createCard("Feels Like", `${current.apparent_temperature}${currentUnits.apparent_temperature}`),
+    createCard("Humidity", `${current.relative_humidity_2m}${currentUnits.relative_humidity_2m}`),
+    createCard("Wind Speed", `${current.wind_speed_10m} ${currentUnits.wind_speed_10m}`),
+    createCard("Pressure", pressureDisplay),
+    createCard("Precipitation", `${current.precipitation} ${currentUnits.precipitation}`),
+    createCard("Cloud Cover", `${current.cloud_cover}${currentUnits.cloud_cover}`)
+  ].join("");
 
   weatherSection.classList.remove("hidden");
   updatedAt.textContent = `Updated: ${new Date(current.time).toLocaleString()} (${payload.timezone})`;
@@ -761,31 +780,174 @@ function renderForecast(payload) {
   setStatus("Weather and 7-day forecast loaded successfully.");
 }
 
+function renderSunAndUv(payload) {
+  const daily = payload.daily;
+  const dailyUnits = payload.daily_units;
+  if (!daily || !daily.time || daily.time.length === 0) {
+    sunUvGrid.innerHTML = [
+      createCard("Sunrise", "Unavailable"),
+      createCard("Sunset", "Unavailable"),
+      createCard("UV Max", "Unavailable")
+    ].join("");
+    return;
+  }
+
+  const sunrise = daily.sunrise?.[0] ? new Date(daily.sunrise[0]).toLocaleTimeString() : "Unavailable";
+  const sunset = daily.sunset?.[0] ? new Date(daily.sunset[0]).toLocaleTimeString() : "Unavailable";
+  const uvMax = daily.uv_index_max?.[0] !== undefined
+    ? `${daily.uv_index_max[0]} ${dailyUnits.uv_index_max || ""}`.trim()
+    : "Unavailable";
+
+  sunUvGrid.innerHTML = [
+    createCard("Sunrise", sunrise),
+    createCard("Sunset", sunset),
+    createCard("UV Max", uvMax)
+  ].join("");
+}
+
+function renderAqi(aqiPayload) {
+  if (!aqiPayload?.current) {
+    aqiGrid.innerHTML = [
+      createCard("US AQI", "Unavailable"),
+      createCard("PM2.5", "Unavailable"),
+      createCard("PM10", "Unavailable"),
+      createCard("Ozone", "Unavailable")
+    ].join("");
+    return;
+  }
+  const current = aqiPayload.current;
+  const units = aqiPayload.current_units || {};
+  const band = getAqiBand(current.us_aqi);
+  aqiGrid.innerHTML = [
+    createCard("US AQI", `${current.us_aqi} (${band.label})`),
+    createCard("PM2.5", `${current.pm2_5} ${units.pm2_5 || ""}`.trim()),
+    createCard("PM10", `${current.pm10} ${units.pm10 || ""}`.trim()),
+    createCard("Ozone", `${current.ozone} ${units.ozone || ""}`.trim())
+  ].join("");
+  const first = aqiGrid.querySelector(".card-value");
+  if (first) {
+    first.style.color = band.color;
+  }
+}
+
+function renderAlerts(payload, aqiPayload) {
+  const alerts = [];
+  const current = payload.current;
+  const daily = payload.daily;
+
+  if (current.wind_speed_10m >= 45) {
+    alerts.push("High wind advisory");
+  }
+  if ([65, 67, 82, 86, 95, 96, 99].includes(current.weather_code)) {
+    alerts.push("Severe precipitation/storm risk");
+  }
+  if (daily?.uv_index_max?.[0] >= 8) {
+    alerts.push("High UV warning");
+  }
+  if (aqiPayload?.current?.us_aqi >= 151) {
+    alerts.push("Poor air quality warning");
+  }
+
+  if (alerts.length === 0) {
+    alertsPanel.classList.remove("hidden");
+    alertsPanel.innerHTML = "<span class=\"alert-pill info\">No active alerts</span>";
+    return;
+  }
+
+  alertsPanel.classList.remove("hidden");
+  alertsPanel.innerHTML = alerts.map((alert) => `<span class="alert-pill">${alert}</span>`).join("");
+}
+
+function renderHourlyChart(payload) {
+  const hourly = payload.hourly;
+  const units = payload.hourly_units || {};
+  if (!hourly?.time?.length) {
+    hourlyChart.innerHTML = "";
+    hourlyMeta.textContent = "";
+    return;
+  }
+
+  const temps = hourly.temperature_2m.slice(0, 24);
+  const times = hourly.time.slice(0, 24);
+  const min = Math.min(...temps);
+  const max = Math.max(...temps);
+  const range = Math.max(max - min, 1);
+  const chartWidth = 720;
+  const chartHeight = 220;
+  const padX = 24;
+  const padY = 26;
+
+  const points = temps
+    .map((temp, i) => {
+      const x = padX + (i * (chartWidth - padX * 2)) / Math.max(temps.length - 1, 1);
+      const y = chartHeight - padY - ((temp - min) / range) * (chartHeight - padY * 2);
+      return `${x},${y}`;
+    })
+    .join(" ");
+
+  const gradientId = "tempGradient";
+  hourlyChart.innerHTML = `
+    <defs>
+      <linearGradient id="${gradientId}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.95" />
+        <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.2" />
+      </linearGradient>
+    </defs>
+    <polyline fill="none" stroke="#38bdf8" stroke-width="4" points="${points}" />
+    ${temps
+      .map((temp, i) => {
+        const x = padX + (i * (chartWidth - padX * 2)) / Math.max(temps.length - 1, 1);
+        const y = chartHeight - padY - ((temp - min) / range) * (chartHeight - padY * 2);
+        return `<circle cx="${x}" cy="${y}" r="3.3" fill="url(#${gradientId})" />`;
+      })
+      .join("")}
+  `;
+
+  const start = new Date(times[0]).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const end = new Date(times[Math.min(times.length - 1, 23)]).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  hourlyMeta.textContent = `24h temperature trend (${start} - ${end}) in ${units.temperature_2m || "deg"}`;
+}
+
 async function fetchWeather(place) {
   try {
-    setStatus("Loading current weather and 7-day forecast...");
+    setStatus("Loading weather, AQI, hourly chart, and alerts...");
 
     const url = new URL("https://api.open-meteo.com/v1/forecast");
     url.searchParams.set("latitude", place.latitude);
     url.searchParams.set("longitude", place.longitude);
     url.searchParams.set("current", "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,cloud_cover,surface_pressure,wind_speed_10m");
-    url.searchParams.set("daily", "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max");
+    url.searchParams.set("hourly", "temperature_2m,precipitation_probability,wind_speed_10m");
+    url.searchParams.set("forecast_hours", "24");
+    url.searchParams.set("daily", "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset,uv_index_max");
     url.searchParams.set("timezone", "auto");
-    url.searchParams.set("temperature_unit", unitSelect.value);
+    url.searchParams.set("temperature_unit", tempUnitSelect.value);
     url.searchParams.set("wind_speed_unit", getSpeedUnit());
     url.searchParams.set("precipitation_unit", getPrecipitationUnit());
 
-    const response = await fetch(url.toString());
+    const aqiUrl = new URL(airQualityApiUrl);
+    aqiUrl.searchParams.set("latitude", place.latitude);
+    aqiUrl.searchParams.set("longitude", place.longitude);
+    aqiUrl.searchParams.set("current", "us_aqi,pm2_5,pm10,ozone");
+    aqiUrl.searchParams.set("timezone", "auto");
+
+    const [response, aqiResponse] = await Promise.all([fetch(url.toString()), fetch(aqiUrl.toString())]);
     if (!response.ok) {
       throw new Error("Weather API request failed.");
     }
 
-    const data = await response.json();
+    const [data, aqiData] = await Promise.all([
+      response.json(),
+      aqiResponse.ok ? aqiResponse.json() : Promise.resolve(null)
+    ]);
     if (!data.current) {
       throw new Error("No weather data returned.");
     }
 
     renderWeather(place, data);
+    renderSunAndUv(data);
+    renderHourlyChart(data);
+    renderAqi(aqiData);
+    renderAlerts(data, aqiData);
     renderForecast(data);
   } catch (error) {
     setStatus(`Unable to load weather: ${error.message}`);
@@ -828,7 +990,72 @@ form.addEventListener("submit", (event) => {
   searchLocations(query);
 });
 
-unitSelect.addEventListener("change", () => {
+if (currentLocationBtn) {
+  currentLocationBtn.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      setStatus("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setStatus("Detecting your location...");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const place = {
+          name: "Current Location",
+          admin1: "",
+          country: getCoordinateSummary(position.coords.latitude, position.coords.longitude),
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        };
+        lastSelectedLocation = place;
+        clearGlobePin();
+        fetchWeather(place);
+      },
+      (error) => {
+        setStatus(`Unable to access your location: ${error.message}`);
+      },
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  });
+}
+
+[windUnitSelect, precipUnitSelect, pressureUnitSelect].forEach((control) => {
+  control.addEventListener("change", () => {
+    if (lastSelectedLocation) {
+      fetchWeather(lastSelectedLocation);
+    }
+  });
+});
+
+// Backwards compatibility for older snapshots where only one select existed.
+const unitSelect = document.getElementById("unit-select");
+if (unitSelect) {
+  unitSelect.addEventListener("change", () => {
+    if (lastSelectedLocation) {
+      fetchWeather(lastSelectedLocation);
+    }
+  });
+}
+
+if (!tempUnitSelect.value) tempUnitSelect.value = "celsius";
+if (!windUnitSelect.value) windUnitSelect.value = "kmh";
+if (!precipUnitSelect.value) precipUnitSelect.value = "mm";
+if (!pressureUnitSelect.value) pressureUnitSelect.value = "hpa";
+
+if (tempUnitSelect.value === "fahrenheit") {
+  windUnitSelect.value = "mph";
+  precipUnitSelect.value = "inch";
+}
+
+tempUnitSelect.addEventListener("change", () => {
+  if (tempUnitSelect.value === "fahrenheit") {
+    if (windUnitSelect.value === "kmh") {
+      windUnitSelect.value = "mph";
+    }
+    if (precipUnitSelect.value === "mm") {
+      precipUnitSelect.value = "inch";
+    }
+  }
   if (lastSelectedLocation) {
     fetchWeather(lastSelectedLocation);
   }

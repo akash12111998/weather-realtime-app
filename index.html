@@ -26,11 +26,32 @@
         <button id="search-btn" type="submit">Search</button>
       </form>
 
-      <div class="toolbar">
-        <label for="unit-select">Temperature Unit</label>
-        <select id="unit-select">
+      <div class="toolbar unit-toolbar">
+        <button id="current-location-btn" type="button">Use My Location</button>
+
+        <label for="temp-unit-select">Temp</label>
+        <select id="temp-unit-select">
           <option value="celsius">Celsius (C)</option>
           <option value="fahrenheit">Fahrenheit (F)</option>
+        </select>
+
+        <label for="wind-unit-select">Wind</label>
+        <select id="wind-unit-select">
+          <option value="kmh">km/h</option>
+          <option value="mph">mph</option>
+          <option value="kn">knots</option>
+        </select>
+
+        <label for="precip-unit-select">Precip</label>
+        <select id="precip-unit-select">
+          <option value="mm">mm</option>
+          <option value="inch">inch</option>
+        </select>
+
+        <label for="pressure-unit-select">Pressure</label>
+        <select id="pressure-unit-select">
+          <option value="hpa">hPa</option>
+          <option value="inhg">inHg</option>
         </select>
       </div>
     </section>
@@ -62,7 +83,18 @@
 
     <section id="weather-section" class="weather-section hidden" aria-live="polite">
       <h2 id="selected-location"></h2>
+      <h3 class="forecast-title">Smart Alerts</h3>
+      <div id="alerts-panel" class="alerts-panel hidden"></div>
       <div id="weather-grid" class="weather-grid"></div>
+      <h3 class="forecast-title">Sun & UV</h3>
+      <div id="sun-uv-grid" class="sun-uv-grid"></div>
+      <h3 class="forecast-title">Air Quality (AQI)</h3>
+      <div id="aqi-grid" class="aqi-grid"></div>
+      <h3 class="forecast-title">Next 24 Hours</h3>
+      <div class="hourly-chart-wrap">
+        <svg id="hourly-chart" viewBox="0 0 720 220" preserveAspectRatio="none" role="img" aria-label="24 hour temperature trend"></svg>
+      </div>
+      <div id="hourly-meta" class="hourly-meta"></div>
       <p id="updated-at" class="updated-at"></p>
       <h3 class="forecast-title">7-Day Forecast</h3>
       <div id="forecast-grid" class="forecast-grid"></div>
