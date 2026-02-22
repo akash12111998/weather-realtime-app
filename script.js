@@ -17,6 +17,7 @@ const resetGlobeViewBtn = document.getElementById("reset-globe-view-btn");
 const currentLocationBtn = document.getElementById("current-location-btn");
 const globeStyleStatus = document.getElementById("globe-style-status");
 const statusMessage = document.getElementById("status-message");
+const appVersionLabel = document.getElementById("app-version");
 const updatedAt = document.getElementById("updated-at");
 const tempUnitSelect = document.getElementById("temp-unit-select");
 const windUnitSelect = document.getElementById("wind-unit-select");
@@ -33,6 +34,7 @@ const countryBordersGeoJsonUrl = "https://unpkg.com/globe.gl/example/datasets/ne
 const domesticBordersGeoJsonUrl = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces.geojson";
 const airQualityApiUrl = "https://air-quality-api.open-meteo.com/v1/air-quality";
 const defaultOverlayState = { countries: [], domesticPaths: [], countryLabels: [], stateLabels: [] };
+const APP_VERSION = "v1.5.0";
 
 const weatherCodeMap = {
   0: "Clear sky",
@@ -1062,3 +1064,7 @@ tempUnitSelect.addEventListener("change", () => {
 });
 
 initializeGlobe();
+
+if (appVersionLabel) {
+  appVersionLabel.textContent = `Version: ${APP_VERSION}`;
+}

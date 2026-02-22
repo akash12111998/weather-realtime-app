@@ -230,6 +230,13 @@ body {
   color: var(--muted);
 }
 
+.app-version {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  opacity: 0.9;
+}
+
 .updated-at {
   color: var(--muted);
   font-size: 0.9rem;
@@ -435,7 +442,8 @@ body {
   .updated-at,
   .pinned-coords,
   .globe-style-status,
-  .hourly-meta {
+  .hourly-meta,
+  .app-version {
     font-size: 0.84rem;
   }
 

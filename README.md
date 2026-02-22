@@ -6,6 +6,7 @@ A simple web app to search **any city/state/country/region globally** and view c
 
 - Website: `https://akash12111998.github.io/weather-realtime-app/`
 - Repository: `https://github.com/akash12111998/weather-realtime-app`
+- In-app version label (bottom of app) helps confirm latest deployed build
 
 ## Features
 
