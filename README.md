@@ -2,6 +2,11 @@
 
 A simple web app to search **any city/state/country/region globally** and view current weather with a **7-day forecast**.
 
+## Live Demo
+
+- Website: `https://akash12111998.github.io/weather-realtime-app/`
+- Repository: `https://github.com/akash12111998/weather-realtime-app`
+
 ## Features
 
 - Global location lookup (city, state, country, region)
@@ -12,6 +17,8 @@ A simple web app to search **any city/state/country/region globally** and view c
 - Reverse geocoding on globe click (shows nearest city/state/country)
 - Real-time weather details
 - 7-day forecast (daily condition, high/low, rain chance)
+- Responsive layout for mobile and tablet screens
+  - Includes landscape-mobile optimization for better globe visibility and control spacing
 - Unit switch: Celsius or Fahrenheit
 - No paid API required (uses free Open-Meteo APIs)
 
@@ -52,6 +59,27 @@ These are free and do not require credit card setup.
   - Daily weather condition
   - Max and min temperature
   - Maximum precipitation probability
+
+## Responsive Support
+
+The app is optimized for desktop, tablet, and mobile screens.
+
+- **Tablet / small laptop (`<=1024px`)**
+  - Container spacing is reduced for better use of screen width.
+  - Globe height scales down to keep controls and forecast visible.
+
+- **Mobile (`<=768px`)**
+  - Search input and button stack vertically for easier tapping.
+  - Unit/style controls wrap and use full-width selects.
+  - Weather and forecast cards use tighter responsive grids.
+
+- **Small mobile (`<=480px`)**
+  - Typography and card spacing are compacted.
+  - Globe height is reduced to fit key controls on screen.
+
+- **Landscape mobile (`<=900px` + landscape)**
+  - Globe height is further reduced to avoid taking over the viewport.
+  - Header and section spacing are tightened for faster access to weather data.
 
 ## Run Locally
 
