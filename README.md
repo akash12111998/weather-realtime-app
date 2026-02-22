@@ -19,6 +19,8 @@ A simple web app to search **any city/state/country/region globally** and view c
 - 7-day forecast (daily condition, high/low, rain chance)
 - Responsive layout for mobile and tablet screens
   - Includes landscape-mobile optimization for better globe visibility and control spacing
+- Improved globe zoom stability and clearer pin marker with animated highlight rings
+- Reset View control to recenter the globe and resume auto-rotation
 - Unit switch: Celsius or Fahrenheit
 - No paid API required (uses free Open-Meteo APIs)
 
@@ -43,6 +45,7 @@ These are free and do not require credit card setup.
    - Borders mode shows country names and state/province names on the globe.
 5. After globe click, the app resolves and shows nearest **city/state/country**; if unavailable, it falls back to coordinates.
 6. Change Celsius/Fahrenheit from the dropdown to re-fetch data for the last selected or pinned location.
+7. Click **Reset View** to recenter the globe and resume auto-rotation.
 
 ## Weather Data Included
 

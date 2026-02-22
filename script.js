@@ -8,6 +8,7 @@ const forecastGrid = document.getElementById("forecast-grid");
 const globeView = document.getElementById("globe-view");
 const pinnedCoords = document.getElementById("pinned-coords");
 const globeStyleSelect = document.getElementById("globe-style-select");
+const resetGlobeViewBtn = document.getElementById("reset-globe-view-btn");
 const globeStyleStatus = document.getElementById("globe-style-status");
 const statusMessage = document.getElementById("status-message");
 const updatedAt = document.getElementById("updated-at");
@@ -159,6 +160,7 @@ function clearGlobePin() {
   }
 
   globe.pointsData([]);
+  globe.ringsData([]);
   pinnedCoords.textContent = "Pinned location: none";
 }
 
@@ -476,9 +478,31 @@ function setGlobePin(lat, lng) {
   globe.pointsData([{
     lat,
     lng,
-    size: 0.02,
-    color: "#f43f5e"
+    size: 0.05,
+    color: "#ff2d55"
   }]);
+
+  globe.ringsData([
+    {
+      lat,
+      lng,
+      color: "rgba(255, 255, 255, 0.9)",
+      maxRadius: 2.8,
+      propagationSpeed: 2,
+      repeatPeriod: 1200
+    },
+    {
+      lat,
+      lng,
+      color: "rgba(255, 45, 85, 0.72)",
+      maxRadius: 4.5,
+      propagationSpeed: 1.6,
+      repeatPeriod: 1650
+    }
+  ]);
+
+  const controls = globe.controls();
+  controls.autoRotate = false;
 
   pinnedCoords.textContent = `Pinned location: ${getCoordinateSummary(lat, lng)}`;
 }
@@ -558,9 +582,16 @@ function initializeGlobe() {
     .pointLat("lat")
     .pointLng("lng")
     .pointAltitude("size")
-    .pointRadius(0.35)
+    .pointRadius(0.5)
     .pointColor("color")
     .pointsData([])
+    .ringLat("lat")
+    .ringLng("lng")
+    .ringColor("color")
+    .ringMaxRadius("maxRadius")
+    .ringPropagationSpeed("propagationSpeed")
+    .ringRepeatPeriod("repeatPeriod")
+    .ringsData([])
     .onGlobeClick((coords) => {
       handlePinAtCoordinates(coords);
     })
@@ -583,14 +614,29 @@ function initializeGlobe() {
 
   // Start from a centered global view.
   globe.pointOfView({ lat: 0, lng: 0, altitude: 2.1 });
+  const renderer = globe.renderer();
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   const controls = globe.controls();
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.35;
+  // Prevent camera from clipping into the globe at extreme zoom.
+  controls.minDistance = 120;
+  controls.maxDistance = 760;
+  controls.zoomSpeed = 0.8;
 
   if (globeStyleSelect) {
     globeStyleSelect.value = "topographic";
     globeStyleSelect.addEventListener("change", () => {
       applyGlobeStyle(globeStyleSelect.value);
+    });
+  }
+
+  if (resetGlobeViewBtn) {
+    resetGlobeViewBtn.addEventListener("click", () => {
+      globe.pointOfView({ lat: 0, lng: 0, altitude: 2.1 }, 900);
+      const controlsAfterReset = globe.controls();
+      controlsAfterReset.autoRotate = true;
+      setStatus("Globe view reset. Auto-rotate resumed.");
     });
   }
 }

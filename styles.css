@@ -113,6 +113,28 @@ body {
   color: var(--text);
 }
 
+#globe-style-select {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #0b1220;
+  color: var(--text);
+}
+
+#reset-globe-view-btn {
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #111827;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#reset-globe-view-btn:hover {
+  border-color: var(--accent);
+}
+
 .section-title {
   font-size: 1rem;
   margin-bottom: 0.5rem;
@@ -273,6 +295,10 @@ body {
 
   #unit-select,
   #globe-style-select {
+    width: 100%;
+  }
+
+  #reset-globe-view-btn {
     width: 100%;
   }
 
