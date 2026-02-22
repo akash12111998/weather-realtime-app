@@ -59,6 +59,17 @@ body {
   font-size: 0.9rem;
 }
 
+.globe-pin-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff2d55;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 6px rgba(255, 45, 85, 0.28);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
 .globe-view {
   width: 100%;
   height: clamp(520px, 70vh, 760px);

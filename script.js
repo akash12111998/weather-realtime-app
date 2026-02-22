@@ -29,6 +29,8 @@ let globe = null;
 let latestPinRequestId = 0;
 let latestStyleRequestId = 0;
 let borderDataPromise = null;
+let pinMarker = null;
+let searchMarker = null;
 
 const countryBordersGeoJsonUrl = "https://unpkg.com/globe.gl/example/datasets/ne_110m_admin_0_countries.geojson";
 const domesticBordersGeoJsonUrl = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_1_states_provinces.geojson";
@@ -167,13 +169,97 @@ function getCoordinateSummary(lat, lng) {
 }
 
 function clearGlobePin() {
+  pinMarker = null;
+  renderMarkers();
+  pinnedCoords.textContent = "Pinned location: none";
+}
+
+function renderMarkers() {
   if (!globe) {
     return;
   }
 
-  globe.pointsData([]);
-  globe.ringsData([]);
-  pinnedCoords.textContent = "Pinned location: none";
+  const points = [];
+  const rings = [];
+
+  if (searchMarker) {
+    points.push({
+      lat: searchMarker.lat,
+      lng: searchMarker.lng,
+      size: 0.038,
+      color: "#22d3ee"
+    });
+    rings.push({
+      lat: searchMarker.lat,
+      lng: searchMarker.lng,
+      color: "rgba(34, 211, 238, 0.72)",
+      maxRadius: 3.8,
+      propagationSpeed: 1.8,
+      repeatPeriod: 1500
+    });
+  }
+
+  if (pinMarker) {
+    points.push({
+      lat: pinMarker.lat,
+      lng: pinMarker.lng,
+      size: 0.05,
+      color: "#ff2d55"
+    });
+    rings.push(
+      {
+        lat: pinMarker.lat,
+        lng: pinMarker.lng,
+        color: "rgba(255, 255, 255, 0.9)",
+        maxRadius: 2.8,
+        propagationSpeed: 2,
+        repeatPeriod: 1200
+      },
+      {
+        lat: pinMarker.lat,
+        lng: pinMarker.lng,
+        color: "rgba(255, 45, 85, 0.72)",
+        maxRadius: 4.5,
+        propagationSpeed: 1.6,
+        repeatPeriod: 1650
+      }
+    );
+  }
+
+  globe.pointsData(points);
+  globe.ringsData(rings);
+  globe.htmlElementsData(
+    pinMarker
+      ? [
+          {
+            lat: pinMarker.lat,
+            lng: pinMarker.lng,
+            kind: "pin"
+          }
+        ]
+      : []
+  );
+}
+
+function setSearchHighlight(place) {
+  if (!place || !globe) {
+    return;
+  }
+
+  searchMarker = {
+    lat: place.latitude,
+    lng: place.longitude
+  };
+  renderMarkers();
+  const controls = globe.controls();
+  controls.autoRotate = false;
+  // Focus search result more tightly so the region is easier to inspect.
+  globe.pointOfView({ lat: place.latitude, lng: place.longitude, altitude: 1.25 }, 1100);
+}
+
+function clearSearchHighlight() {
+  searchMarker = null;
+  renderMarkers();
 }
 
 function coordsToLatLngPairs(lineCoords) {
@@ -487,31 +573,9 @@ function setGlobePin(lat, lng) {
     return;
   }
 
-  globe.pointsData([{
-    lat,
-    lng,
-    size: 0.05,
-    color: "#ff2d55"
-  }]);
-
-  globe.ringsData([
-    {
-      lat,
-      lng,
-      color: "rgba(255, 255, 255, 0.9)",
-      maxRadius: 2.8,
-      propagationSpeed: 2,
-      repeatPeriod: 1200
-    },
-    {
-      lat,
-      lng,
-      color: "rgba(255, 45, 85, 0.72)",
-      maxRadius: 4.5,
-      propagationSpeed: 1.6,
-      repeatPeriod: 1650
-    }
-  ]);
+  clearSearchHighlight();
+  pinMarker = { lat, lng };
+  renderMarkers();
 
   const controls = globe.controls();
   controls.autoRotate = false;
@@ -597,6 +661,16 @@ function initializeGlobe() {
     .pointRadius(0.5)
     .pointColor("color")
     .pointsData([])
+    .htmlLat("lat")
+    .htmlLng("lng")
+    .htmlElement((marker) => {
+      const el = document.createElement("div");
+      if (marker.kind === "pin") {
+        el.className = "globe-pin-dot";
+      }
+      return el;
+    })
+    .htmlElementsData([])
     .ringLat("lat")
     .ringLng("lng")
     .ringColor("color")
@@ -657,10 +731,13 @@ function renderResults(results) {
   resultsList.innerHTML = "";
 
   if (!results || results.length === 0) {
+    clearSearchHighlight();
     setStatus("No matching locations found. Try a broader name.");
     return;
   }
 
+  // Highlight top match immediately after search submit.
+  setSearchHighlight(results[0]);
   setStatus("Choose one of the matching locations.");
 
   results.forEach((place) => {
@@ -674,7 +751,8 @@ function renderResults(results) {
 
     button.innerHTML = `<strong>${title}</strong><div class="result-sub">${subtitle}</div>`;
     button.addEventListener("click", () => {
-      clearGlobePin();
+      setGlobePin(place.latitude, place.longitude);
+      globe.pointOfView({ lat: place.latitude, lng: place.longitude, altitude: 1.2 }, 1000);
       lastSelectedLocation = place;
       fetchWeather(place);
     });
@@ -1011,6 +1089,7 @@ if (currentLocationBtn) {
         };
         lastSelectedLocation = place;
         clearGlobePin();
+        clearSearchHighlight();
         fetchWeather(place);
       },
       (error) => {

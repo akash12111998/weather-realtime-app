@@ -16,6 +16,8 @@ A simple web app to search **any city/state/country/region globally** and view c
 - Globe style switcher: Satellite / Satellite + Labels / Topographic / Night / Borders (Intl + Domestic) / Cartographic Light / Cartographic Dark
   - Borders mode includes colorful political fills + country and state/province names
 - Reverse geocoding on globe click (shows nearest city/state/country)
+- Search-to-globe highlight: pressing Search/Enter highlights top match on the globe
+  - Search focus pauses globe rotation and zooms in to the matched region
 - Real-time weather details
 - 7-day forecast (daily condition, high/low, rain chance)
 - 24-hour temperature trend chart
@@ -54,6 +56,9 @@ These are free and do not require credit card setup.
    - A small status message appears while border layers are loading.
    - Borders mode shows country names and state/province names on the globe.
 5. After globe click, the app resolves and shows nearest **city/state/country**; if unavailable, it falls back to coordinates.
+   - Pressing **Search/Enter** also highlights the top matched region on the globe automatically.
+   - Clicking a specific search result pins that exact point, zooms to it, and keeps globe rotation paused.
+   - Pinned result marker uses a high-contrast dot + pulse effect for clear visibility.
 6. Change Celsius/Fahrenheit from the dropdown to re-fetch data for the last selected or pinned location.
 7. Click **Reset View** to recenter the globe and resume auto-rotation.
 8. Click **Use My Location** to instantly load local weather and AQI.
